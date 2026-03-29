@@ -54,6 +54,8 @@ const topicColors: Record<string, string> = {
   'All': '#9c27b0'
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function App() {
   console.log("App component rendering...");
   return <QuizApp />;
@@ -87,7 +89,7 @@ function QuizApp() {
 
   useEffect(() => {
     console.log("Fetching topics...");
-    fetch('http://localhost:8000/topics')
+    fetch(`${API_BASE_URL}/topics`)
       .then(res => res.json())
       .then(data => {
         console.log("Topics fetched:", data);
@@ -123,7 +125,7 @@ function QuizApp() {
     setLoading(true);
     setError(null);
     console.log(`Starting quiz for ${selectedTopic} with ${questionCount} questions`);
-    fetch(`http://localhost:8000/questions?topic=${selectedTopic}&count=${questionCount}`)
+    fetch(`${API_BASE_URL}/questions?topic=${selectedTopic}&count=${questionCount}`)
       .then(res => {
         if (!res.ok) throw new Error("Backend responded with an error");
         return res.json();
@@ -193,7 +195,7 @@ function QuizApp() {
       selected_option_id: answers[q.id] || ''
     }));
 
-    fetch('http://localhost:8000/submit', {
+    fetch(`${API_BASE_URL}/submit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(submission)
@@ -218,7 +220,7 @@ function QuizApp() {
 
   const askAI = (questionId: number, userAnsId: string) => {
     setAiLoading(questionId);
-    fetch('http://localhost:8000/ai-explain', {
+    fetch(`${API_BASE_URL}/ai-explain`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question_id: questionId, user_answer_id: userAnsId })
